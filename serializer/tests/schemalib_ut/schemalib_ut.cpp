@@ -39,7 +39,7 @@ static MICROMOCK_MUTEX_HANDLE g_testByTest;
 static const size_t actionCount = 42;
 static const DEVICE_HANDLE TEST_DEVICE_HANDLE = (DEVICE_HANDLE)0x4747;
 
-DEFINE_MICROMOCK_ENUM_TO_STRING(SERIALIZER_RESULT, SERIALIZER_RESULT_VALUES);
+MU_DEFINE_MICROMOCK_ENUM_TO_STRING(SERIALIZER_RESULT, SERIALIZER_RESULT_VALUES);
 
 std::ostream& operator<<(std::ostream& left, const EDM_DATE_TIME_OFFSET dateTimeOffset)
 {
@@ -321,7 +321,7 @@ public:
 
     MOCK_STATIC_METHOD_2(, int, STRING_concat, STRING_HANDLE, s1, const char*, s2)
     currentSTRING_concat_call += (currentSTRING_concat_called_from_another_mock) ? 0 : 1;
-    MOCK_METHOD_END(int, (((whenShallSTRING_concat_fail>0) && (currentSTRING_concat_call == whenShallSTRING_concat_fail)) ? __FAILURE__ : BASEIMPLEMENTATION::STRING_concat(s1, s2)));
+    MOCK_METHOD_END(int, (((whenShallSTRING_concat_fail>0) && (currentSTRING_concat_call == whenShallSTRING_concat_fail)) ? MU_FAILURE : BASEIMPLEMENTATION::STRING_concat(s1, s2)));
 
     MOCK_STATIC_METHOD_1(, const char*, STRING_c_str, STRING_HANDLE, s)
     MOCK_METHOD_END(const char*, BASEIMPLEMENTATION::STRING_c_str(s))

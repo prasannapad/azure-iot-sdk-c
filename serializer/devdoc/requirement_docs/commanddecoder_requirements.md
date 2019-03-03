@@ -13,7 +13,7 @@ The CommandDecoder module decodes one command extracting the name and arguments 
     COMMANDDECODER_ERROR, \
     COMMANDDECODER_INVALID_ARG, \
 
-DEFINE_ENUM(COMMANDDECODER_RESULT, COMMANDDECODER_RESULT_VALUES)
+MU_DEFINE_ENUM(COMMANDDECODER_RESULT, COMMANDDECODER_RESULT_VALUES)
  
 #ifdef __cplusplus
 extern "C" {

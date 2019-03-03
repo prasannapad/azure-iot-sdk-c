@@ -288,12 +288,12 @@ static DEVICE_AUTH_CREDENTIAL_INFO g_test_sas_cred_no_keyname;
 static DEVICE_AUTH_CREDENTIAL_INFO g_test_x509_cred;
 static DEVICE_AUTH_CREDENTIAL_INFO g_test_key_cred;
 
-DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
+MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
     char temp_str[256];
-    (void)snprintf(temp_str, sizeof(temp_str), "umock_c reported error :%s", ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    (void)snprintf(temp_str, sizeof(temp_str), "umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
     ASSERT_FAIL(temp_str);
 }
 
@@ -360,8 +360,8 @@ BEGIN_TEST_SUITE(iothub_auth_client_ut)
         REGISTER_GLOBAL_MOCK_HOOK(URL_EncodeString, my_URL_EncodeString);
         REGISTER_GLOBAL_MOCK_FAIL_RETURN(URL_EncodeString, NULL);
 
-        REGISTER_GLOBAL_MOCK_HOOK(Base64_Decode, my_Base64_Decode);
-        REGISTER_GLOBAL_MOCK_FAIL_RETURN(Base64_Decode, NULL);
+        REGISTER_GLOBAL_MOCK_HOOK(Base64_Decoder, my_Base64_Decode);
+        REGISTER_GLOBAL_MOCK_FAIL_RETURN(Base64_Decoder, NULL);
         REGISTER_GLOBAL_MOCK_HOOK(BUFFER_new, my_BUFFER_new);
         REGISTER_GLOBAL_MOCK_FAIL_RETURN(BUFFER_new, NULL);
         REGISTER_GLOBAL_MOCK_RETURN(BUFFER_length, TEST_DATA_LEN);
@@ -448,7 +448,7 @@ BEGIN_TEST_SUITE(iothub_auth_client_ut)
         if (use_key)
         {
             STRICT_EXPECTED_CALL(hsm_client_get_symmetric_key(IGNORED_PTR_ARG));
-            STRICT_EXPECTED_CALL(Base64_Decode(IGNORED_PTR_ARG));
+            STRICT_EXPECTED_CALL(Base64_Decoder(IGNORED_PTR_ARG));
             STRICT_EXPECTED_CALL(BUFFER_new());
             STRICT_EXPECTED_CALL(BUFFER_length(IGNORED_PTR_ARG));
             STRICT_EXPECTED_CALL(BUFFER_u_char(IGNORED_PTR_ARG));

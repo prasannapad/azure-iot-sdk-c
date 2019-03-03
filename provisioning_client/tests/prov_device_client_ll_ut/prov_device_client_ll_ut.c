@@ -200,12 +200,12 @@ extern "C"
 }
 #endif
 
-DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
+MU_DEFINE_ENUM_STRINGS(UMOCK_C_ERROR_CODE, UMOCK_C_ERROR_CODE_VALUES)
 
 static void on_umock_c_error(UMOCK_C_ERROR_CODE error_code)
 {
     char temp_str[256];
-    (void)snprintf(temp_str, sizeof(temp_str), "umock_c reported error :%s", ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
+    (void)snprintf(temp_str, sizeof(temp_str), "umock_c reported error :%s", MU_ENUM_TO_STRING(UMOCK_C_ERROR_CODE, error_code));
     ASSERT_FAIL(temp_str);
 }
 
@@ -486,8 +486,8 @@ BEGIN_TEST_SUITE(prov_device_client_ll_ut)
 
         REGISTER_GLOBAL_MOCK_HOOK(Base64_Encode_Bytes, my_Base64_Encode_Bytes);
         REGISTER_GLOBAL_MOCK_FAIL_RETURN(Base64_Encode_Bytes, NULL);
-        REGISTER_GLOBAL_MOCK_HOOK(Base64_Decode, my_Base64_Decode);
-        REGISTER_GLOBAL_MOCK_FAIL_RETURN(Base64_Decode, NULL);
+        REGISTER_GLOBAL_MOCK_HOOK(Base64_Decoder, my_Base64_Decode);
+        REGISTER_GLOBAL_MOCK_FAIL_RETURN(Base64_Decoder, NULL);
 }
 
     TEST_SUITE_CLEANUP(suite_cleanup)
@@ -629,7 +629,7 @@ BEGIN_TEST_SUITE(prov_device_client_ll_ut)
 
         STRICT_EXPECTED_CALL(json_object_get_value(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
         STRICT_EXPECTED_CALL(json_value_get_string(IGNORED_PTR_ARG));
-        STRICT_EXPECTED_CALL(Base64_Decode(IGNORED_PTR_ARG));
+        STRICT_EXPECTED_CALL(Base64_Decoder(IGNORED_PTR_ARG));
         setup_retrieve_json_item_mocks(TEST_STRING_VALUE);
         STRICT_EXPECTED_CALL(json_value_free(IGNORED_PTR_ARG));
     }
@@ -693,7 +693,7 @@ BEGIN_TEST_SUITE(prov_device_client_ll_ut)
         STRICT_EXPECTED_CALL(json_object_get_object(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
         STRICT_EXPECTED_CALL(json_object_get_value(IGNORED_PTR_ARG, IGNORED_PTR_ARG));
         STRICT_EXPECTED_CALL(json_value_get_string(IGNORED_PTR_ARG)).SetReturn(PROV_ASSIGNED_STATUS);
-        STRICT_EXPECTED_CALL(Base64_Decode(IGNORED_PTR_ARG));
+        STRICT_EXPECTED_CALL(Base64_Decoder(IGNORED_PTR_ARG));
 
         setup_retrieve_json_item_mocks(TEST_STRING_VALUE);
         setup_retrieve_json_item_mocks(TEST_STRING_VALUE);

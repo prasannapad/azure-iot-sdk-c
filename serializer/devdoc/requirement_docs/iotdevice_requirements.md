@@ -13,7 +13,7 @@ The IoTDevice module shall create a handle to a device associated with a specifi
     DEVICE_COMMAND_DECODER_FAILED,		\
     DEVICE_ERROR
 
-DEFINE_ENUM(DEVICE_RESULT, DEVICE_RESULT_VALUES)
+MU_DEFINE_ENUM(DEVICE_RESULT, DEVICE_RESULT_VALUES)
 
 typedef void* DEVICE_HANDLE;
 typedef EXECUTE_COMMAND_RESULT (*pPfDeviceActionCallback)(DEVICE_HANDLE deviceHandle, void* callbackUserContext, const char* relativeActionPath, const char* actionName, size_t argCount, const AGENT_DATA_TYPE* args);

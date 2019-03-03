@@ -15,6 +15,7 @@
 
 #include "agenttypesystem.h"
 #include "azure_c_shared_utility/optimize_size.h"
+#include "azure_c_shared_utility/macro_utils.h"
 #include "azure_c_shared_utility/crt_abstractions.h"
 #include "azure_c_shared_utility/strings.h"
 
@@ -29,13 +30,13 @@ using namespace std;
 
 static MICROMOCK_MUTEX_HANDLE g_testByTest;
 
-DEFINE_MICROMOCK_ENUM_TO_STRING(AGENT_DATA_TYPES_RESULT, AGENT_DATA_TYPES_RESULT_VALUES);
+MU_DEFINE_MICROMOCK_ENUM_TO_STRING(AGENT_DATA_TYPES_RESULT, AGENT_DATA_TYPES_RESULT_VALUES);
 
-DEFINE_MICROMOCK_ENUM_TO_STRING(EDM_BOOLEANS, EDM_BOOLEANS_VALUES)
+MU_DEFINE_MICROMOCK_ENUM_TO_STRING(EDM_BOOLEANS, EDM_BOOLEANS_VALUES)
 
-DEFINE_MICROMOCK_ENUM_TO_STRING(JSON_DECODER_RESULT, JSON_DECODER_RESULT_VALUES);
+MU_DEFINE_MICROMOCK_ENUM_TO_STRING(JSON_DECODER_RESULT, JSON_DECODER_RESULT_VALUES);
 
-DEFINE_MICROMOCK_ENUM_TO_STRING(AGENT_DATA_TYPE_TYPE, AGENT_DATA_TYPE_TYPE_VALUES);
+MU_DEFINE_MICROMOCK_ENUM_TO_STRING(AGENT_DATA_TYPE_TYPE, AGENT_DATA_TYPE_TYPE_VALUES);
 
 /*Tests_SRS_AGENT_TYPE_SYSTEM_99_001:[AGENT_TYPE_SYSTEM shall have the following interface]*/
 /*if the file compiles, than the interface is tested that it exists*/
@@ -127,7 +128,7 @@ public:
 
     MOCK_STATIC_METHOD_2(, int, STRING_concat, STRING_HANDLE, s1, const char*, s2)
         currentSTRING_concat_call += (currentSTRING_concat_called_from_another_mock)?0:1;
-    MOCK_METHOD_END(int, (((whenShallSTRING_concat_fail>0) && (currentSTRING_concat_call == whenShallSTRING_concat_fail)) ? __FAILURE__ : BASEIMPLEMENTATION::STRING_concat(s1, s2)));
+    MOCK_METHOD_END(int, (((whenShallSTRING_concat_fail>0) && (currentSTRING_concat_call == whenShallSTRING_concat_fail)) ? MU_FAILURE : BASEIMPLEMENTATION::STRING_concat(s1, s2)));
 
     MOCK_STATIC_METHOD_1(, const char*, STRING_c_str, STRING_HANDLE, s)
     MOCK_METHOD_END(const char*, BASEIMPLEMENTATION::STRING_c_str(s))
@@ -177,7 +178,7 @@ public:
 
     MOCK_STATIC_METHOD_2(, int, STRING_concat_with_STRING, STRING_HANDLE, s1, STRING_HANDLE, s2)
         currentSTRING_concat_with_STRING_call++;
-    MOCK_METHOD_END(int, (((currentSTRING_concat_with_STRING_call>0) && (currentSTRING_concat_with_STRING_call == whenShallSTRING_concat_with_STRING_fail)) ? __FAILURE__ : BASEIMPLEMENTATION::STRING_concat_with_STRING(s1, s2)));
+    MOCK_METHOD_END(int, (((currentSTRING_concat_with_STRING_call>0) && (currentSTRING_concat_with_STRING_call == whenShallSTRING_concat_with_STRING_fail)) ? MU_FAILURE : BASEIMPLEMENTATION::STRING_concat_with_STRING(s1, s2)));
 
     MOCK_STATIC_METHOD_2(, STRING_HANDLE, STRING_construct_n, const char*, source, size_t, n)
         STRING_HANDLE result2;

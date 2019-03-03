@@ -11,7 +11,7 @@ SchemaSerializer is a module that serializes the schema for one device to a JSON
     SCHEMA_SERIALIZER_INVALID_ARG,  \
     SCHEMA_SERIALIZER_ERROR
 
-DEFINE_ENUM(SCHEMA_SERIALIZER_RESULT, SCHEMA_SERIALIZER_VALUES)
+MU_DEFINE_ENUM(SCHEMA_SERIALIZER_RESULT, SCHEMA_SERIALIZER_VALUES)
 
 extern SCHEMA_SERIALIZER_RESULT SchemaSerializer_SerializeCommandMetadata(SCHEMA_MODEL_TYPE_HANDLE modelHandle, STRING_HANDLE schemaText);
 SchemaSerializer_SerializeCommandMetadata

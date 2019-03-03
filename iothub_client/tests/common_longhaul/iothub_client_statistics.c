@@ -728,7 +728,7 @@ int iothub_client_statistics_add_connection_status(IOTHUB_CLIENT_STATISTICS_HAND
     if (handle == NULL)
     {
         LogError("Invalid argument (handle is NULL)");
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -737,7 +737,7 @@ int iothub_client_statistics_add_connection_status(IOTHUB_CLIENT_STATISTICS_HAND
         if ((conn_status = (CONNECTION_STATUS_INFO*)malloc(sizeof(CONNECTION_STATUS_INFO))) == NULL)
         {
             LogError("Failed allocating CONNECTION_STATUS_INFO");
-            result = __FAILURE__;
+            result = MU_FAILURE;
         }
         else
         {
@@ -746,7 +746,7 @@ int iothub_client_statistics_add_connection_status(IOTHUB_CLIENT_STATISTICS_HAND
             if (singlylinkedlist_add(stats->connection_status_history, conn_status) == NULL)
             {
                 LogError("Failed adding CONNECTION_STATUS_INFO");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -781,7 +781,7 @@ int iothub_client_statistics_add_telemetry_info(IOTHUB_CLIENT_STATISTICS_HANDLE 
     if (handle == NULL || info == NULL || (type != TELEMETRY_QUEUED && type != TELEMETRY_SENT && type != TELEMETRY_RECEIVED))
     {
         LogError("Invalid argument (handle=%p, type=%s, info=%p)", handle, ENUM_TO_STRING(TELEMETRY_EVENT_TYPE, type), info);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -794,18 +794,18 @@ int iothub_client_statistics_add_telemetry_info(IOTHUB_CLIENT_STATISTICS_HANDLE 
             if (type != TELEMETRY_QUEUED)
             {
                 LogError("Telemetry info not found for message %lu (%d)", (unsigned long)info->message_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if ((queued_info = (TELEMETRY_INFO*)malloc(sizeof(TELEMETRY_INFO))) == NULL)
             {
                 LogError("Failed clonning the TELEMETRY_INFO");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (singlylinkedlist_add(stats->telemetry_events, queued_info) == NULL)
             {
                 LogError("Failed adding telemetry info (message id: %lu)", (unsigned long)info->message_id);
                 free(queued_info);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -824,7 +824,7 @@ int iothub_client_statistics_add_telemetry_info(IOTHUB_CLIENT_STATISTICS_HANDLE 
             if ((queued_info = (TELEMETRY_INFO*)singlylinkedlist_item_get_value(list_item)) == NULL)
             {
                 LogError("Failed retrieving queued telemetry info (message id: %lu)", (unsigned long)info->message_id);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -853,7 +853,7 @@ int iothub_client_statistics_get_telemetry_summary(IOTHUB_CLIENT_STATISTICS_HAND
     if (handle == NULL || summary == NULL)
     {
         LogError("Invalid argument (handle=%p, summary=%p)", handle, summary);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -912,7 +912,7 @@ int iothub_client_statistics_add_c2d_info(IOTHUB_CLIENT_STATISTICS_HANDLE handle
     if (handle == NULL || info == NULL)
     {
         LogError("Invalid argument (handle=%p, type=%s, info=%p)", handle, ENUM_TO_STRING(C2D_EVENT_TYPE, type), info);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -925,18 +925,18 @@ int iothub_client_statistics_add_c2d_info(IOTHUB_CLIENT_STATISTICS_HANDLE handle
             if (type != C2D_QUEUED)
             {
                 LogError("C2D message info not found for message %lu (%d)", (unsigned long)info->message_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if ((queued_info = (C2D_MESSAGE_INFO*)malloc(sizeof(C2D_MESSAGE_INFO))) == NULL)
             {
                 LogError("Failed clonning the C2D_MESSAGE_INFO");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (singlylinkedlist_add(stats->c2d_messages, queued_info) == NULL)
             {
                 LogError("Failed adding c2d message info (message id: %lu)", (unsigned long)info->message_id);
                 free(queued_info);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -954,7 +954,7 @@ int iothub_client_statistics_add_c2d_info(IOTHUB_CLIENT_STATISTICS_HANDLE handle
             if ((queued_info = (C2D_MESSAGE_INFO*)singlylinkedlist_item_get_value(list_item)) == NULL)
             {
                 LogError("Failed retrieving queued c2d message info (message id: %lu)", (unsigned long)info->message_id);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -972,7 +972,7 @@ int iothub_client_statistics_add_c2d_info(IOTHUB_CLIENT_STATISTICS_HANDLE handle
                 else
                 {
                     LogError("C2D message %lu in queue, invalid event type (%d)", (unsigned long)info->message_id, (int)type);
-                    result = __FAILURE__;
+                    result = MU_FAILURE;
                 }
             }
         }
@@ -988,7 +988,7 @@ int iothub_client_statistics_get_c2d_summary(IOTHUB_CLIENT_STATISTICS_HANDLE han
     if (handle == NULL || summary == NULL)
     {
         LogError("Invalid argument (handle=%p, summary=%p)", handle, summary);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1051,7 +1051,7 @@ int iothub_client_statistics_add_device_method_info(IOTHUB_CLIENT_STATISTICS_HAN
     if (handle == NULL || info == NULL)
     {
         LogError("Invalid argument (handle=%p, type=%s, info=%p)", handle, ENUM_TO_STRING(DEVICE_METHOD_EVENT_TYPE, type), info);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1059,7 +1059,7 @@ int iothub_client_statistics_add_device_method_info(IOTHUB_CLIENT_STATISTICS_HAN
         DEVICE_METHOD_INFO* queued_info;
         LIST_ITEM_HANDLE list_item = singlylinkedlist_find(stats->device_methods, find_device_method_info_by_id, info);
 
-        result = __FAILURE__;
+        result = MU_FAILURE;
 
         if (list_item == NULL)
         {
@@ -1119,7 +1119,7 @@ int iothub_client_statistics_get_device_method_summary(IOTHUB_CLIENT_STATISTICS_
     if (handle == NULL || summary == NULL)
     {
         LogError("Invalid argument (handle=%p, summary=%p)", handle, summary);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1189,7 +1189,7 @@ int iothub_client_statistics_add_device_twin_desired_info(IOTHUB_CLIENT_STATISTI
     if (handle == NULL || info == NULL)
     {
         LogError("Invalid argument (handle=%p, type=%s, info=%p)", handle, ENUM_TO_STRING(DEVICE_TWIN_EVENT_TYPE, type), info);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1204,18 +1204,18 @@ int iothub_client_statistics_add_device_twin_desired_info(IOTHUB_CLIENT_STATISTI
             if (type != DEVICE_TWIN_UPDATE_SENT)
             {
                 LogError("Invalid info type (update id=%lu, type=%d)", (unsigned long)info->update_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if ((queued_info = (DEVICE_TWIN_DESIRED_INFO*)malloc(sizeof(DEVICE_TWIN_DESIRED_INFO))) == NULL)
             {
                 LogError("Failed clonning the DEVICE_TWIN_DESIRED_INFO");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (singlylinkedlist_add(stats->twin_desired_properties, queued_info) == NULL)
             {
                 LogError("Failed adding device twin info (update id: %lu)", (unsigned long)info->update_id);
                 free(queued_info);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -1233,7 +1233,7 @@ int iothub_client_statistics_add_device_twin_desired_info(IOTHUB_CLIENT_STATISTI
             if ((queued_info = (DEVICE_TWIN_DESIRED_INFO*)singlylinkedlist_item_get_value(list_item)) == NULL)
             {
                 LogError("Failed retrieving queued device twin info (update id: %lu)", (unsigned long)info->update_id);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (type == DEVICE_TWIN_UPDATE_RECEIVED)
             {
@@ -1244,7 +1244,7 @@ int iothub_client_statistics_add_device_twin_desired_info(IOTHUB_CLIENT_STATISTI
             else
             {
                 LogError("Device twin %lu in queue; invalid event type (%d)", (unsigned long)info->update_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
         }
     }
@@ -1259,7 +1259,7 @@ int iothub_client_statistics_get_device_twin_desired_summary(IOTHUB_CLIENT_STATI
     if (handle == NULL || summary == NULL)
     {
         LogError("Invalid argument (handle=%p, summary=%p)", handle, summary);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1313,7 +1313,7 @@ int iothub_client_statistics_add_device_twin_reported_info(IOTHUB_CLIENT_STATIST
     if (handle == NULL || info == NULL)
     {
         LogError("Invalid argument (handle=%p, type=%s, info=%p)", handle, ENUM_TO_STRING(DEVICE_TWIN_EVENT_TYPE, type), info);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {
@@ -1326,18 +1326,18 @@ int iothub_client_statistics_add_device_twin_reported_info(IOTHUB_CLIENT_STATIST
             if (type != DEVICE_TWIN_UPDATE_QUEUED)
             {
                 LogError("Invalid info type (update id=%lu, type=%d)", (unsigned long)info->update_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if ((queued_info = (DEVICE_TWIN_REPORTED_INFO*)malloc(sizeof(DEVICE_TWIN_REPORTED_INFO))) == NULL)
             {
                 LogError("Failed clonning the DEVICE_TWIN_REPORTED_INFO");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (singlylinkedlist_add(stats->twin_reported_properties, queued_info) == NULL)
             {
                 LogError("Failed adding device twin info (update id: %lu)", (unsigned long)info->update_id);
                 free(queued_info);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {
@@ -1356,7 +1356,7 @@ int iothub_client_statistics_add_device_twin_reported_info(IOTHUB_CLIENT_STATIST
             if ((queued_info = (DEVICE_TWIN_REPORTED_INFO*)singlylinkedlist_item_get_value(list_item)) == NULL)
             {
                 LogError("Failed retrieving queued device twin info (update id: %lu)", (unsigned long)info->update_id);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else  if (type == DEVICE_TWIN_UPDATE_SENT)
             {
@@ -1379,7 +1379,7 @@ int iothub_client_statistics_add_device_twin_reported_info(IOTHUB_CLIENT_STATIST
             else
             {
                 LogError("Device twin %lu in queue; invalid event type (%d)", (unsigned long)info->update_id, (int)type);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
         }
     }
@@ -1394,7 +1394,7 @@ int iothub_client_statistics_get_device_twin_reported_summary(IOTHUB_CLIENT_STAT
     if (handle == NULL || summary == NULL)
     {
         LogError("Invalid argument (handle=%p, summary=%p)", handle, summary);
-        result = __FAILURE__;
+        result = MU_FAILURE;
     }
     else
     {

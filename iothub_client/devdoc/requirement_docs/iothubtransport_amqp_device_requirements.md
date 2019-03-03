@@ -404,17 +404,17 @@ extern int device_unsubscribe_message(DEVICE_HANDLE handle);
 extern int device_send_message_disposition(DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result);
 ```
 
-**SRS_DEVICE_09_111: [**If `device_handle` or `disposition_info` are NULL, device_send_message_disposition() shall fail and return __FAILURE__**]**
+**SRS_DEVICE_09_111: [**If `device_handle` or `disposition_info` are NULL, device_send_message_disposition() shall fail and return MU_FAILURE**]**
 
-**SRS_DEVICE_09_112: [**If `disposition_info->source` is NULL, device_send_message_disposition() shall fail and return __FAILURE__**]**  
+**SRS_DEVICE_09_112: [**If `disposition_info->source` is NULL, device_send_message_disposition() shall fail and return MU_FAILURE**]**  
 
 **SRS_DEVICE_09_113: [**A TELEMETRY_MESSENGER_MESSAGE_DISPOSITION_INFO instance shall be created with a copy of the `source` and `message_id` contained in `disposition_info`**]**  
 
-**SRS_DEVICE_09_114: [**If the TELEMETRY_MESSENGER_MESSAGE_DISPOSITION_INFO fails to be created, device_send_message_disposition() shall fail and return __FAILURE__**]**  
+**SRS_DEVICE_09_114: [**If the TELEMETRY_MESSENGER_MESSAGE_DISPOSITION_INFO fails to be created, device_send_message_disposition() shall fail and return MU_FAILURE**]**  
 
 **SRS_DEVICE_09_115: [**`telemetry_messenger_send_message_disposition()` shall be invoked passing the TELEMETRY_MESSENGER_MESSAGE_DISPOSITION_INFO instance and the corresponding TELEMETRY_MESSENGER_DISPOSITION_RESULT**]**  
 
-**SRS_DEVICE_09_116: [**If `telemetry_messenger_send_message_disposition()` fails, device_send_message_disposition() shall fail and return __FAILURE__**]**  
+**SRS_DEVICE_09_116: [**If `telemetry_messenger_send_message_disposition()` fails, device_send_message_disposition() shall fail and return MU_FAILURE**]**  
 
 **SRS_DEVICE_09_117: [**device_send_message_disposition() shall destroy the TELEMETRY_MESSENGER_MESSAGE_DISPOSITION_INFO instance**]**  
 

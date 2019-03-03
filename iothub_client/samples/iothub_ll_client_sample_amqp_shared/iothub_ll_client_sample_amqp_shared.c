@@ -155,12 +155,12 @@ static int create_events(EVENT_INSTANCE* events, const char* deviceId)
         if (sprintf_s(msgText, sizeof(msgText), "{\"deviceId\":\"myFirstDevice\",\"windSpeed\":%.2f,\"temperature\":%.2f,\"humidity\":%.2f}", avgWindSpeed + (rand() % 4 + 2), temperature, humidity) == 0)
         {
             (void)printf("ERROR: failed creating event message for device %s\r\n", deviceId);
-            result = __FAILURE__;
+            result = MU_FAILURE;
         }
         else if ((events[i].messageHandle = IoTHubMessage_CreateFromByteArray((const unsigned char*)msgText, strlen(msgText))) == NULL)
         {
             (void)printf("ERROR: failed creating the IOTHUB_MESSAGE_HANDLE for device %s\r\n", deviceId);
-            result = __FAILURE__;
+            result = MU_FAILURE;
         }
         else
         {
@@ -169,17 +169,17 @@ static int create_events(EVENT_INSTANCE* events, const char* deviceId)
             if ((propMap = IoTHubMessage_Properties(events[i].messageHandle)) == NULL)
             {
                 (void)printf("ERROR: failed getting device %s's message property map\r\n", deviceId);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (sprintf_s(propText, sizeof(propText), temperature > 28 ? "true" : "false") == 0)
             {
                 (void)printf("ERROR: sprintf_s failed for device %s's message property\r\n", deviceId);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else if (Map_AddOrUpdate(propMap, "temperatureAlert", propText) != MAP_OK)
             {
                 (void)printf("ERROR: Map_AddOrUpdate failed for device %s\r\n", deviceId);
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             else
             {

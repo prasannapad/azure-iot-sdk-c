@@ -36,7 +36,7 @@ This is a quick tutorial with the steps to create, update, get, and delete an En
             if ((am_handle = attestationMechanism_createWithX509SigningCert(signingCertificate, NULL)) == NULL)
             {
                 printf("Failed calling attestationMechanism_createX509SigningCert\n");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             ```
 
@@ -45,7 +45,7 @@ This is a quick tutorial with the steps to create, update, get, and delete an En
             if ((am_handle = attestationMechanism_createWithX509CAReference(caReference, NULL)) == NULL)
             {
                 printf("Failed calling attestationMechansim_createX509CAReference\n");
-                result = __FAILURE__;
+                result = MU_FAILURE;
             }
             ```
 
