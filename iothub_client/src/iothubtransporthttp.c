@@ -20,7 +20,7 @@
 #include "azure_c_shared_utility/httpapiex.h"
 #include "azure_c_shared_utility/httpapiexsas.h"
 #include "azure_c_shared_utility/strings.h"
-#include "azure_c_shared_utility/base64.h"
+#include "azure_c_shared_utility/azure_base64.h"
 #include "azure_c_shared_utility/doublylinkedlist.h"
 #include "azure_c_shared_utility/vector.h"
 #include "azure_c_shared_utility/httpheaders.h"
@@ -1348,10 +1348,10 @@ static STRING_HANDLE make1EventJSONitem(PDLIST_ENTRY item, size_t *messageSizeCo
             }
             else
             {
-                STRING_HANDLE encoded = Base64_Encode_Bytes(source, size);
+                STRING_HANDLE encoded = Azure_Base64_Encode_Bytes(source, size);
                 if (encoded == NULL)
                 {
-                    LogError("unable to Base64_Encode_Bytes.");
+                    LogError("unable to Azure_Base64_Encode_Bytes.");
                     STRING_delete(result);
                     result = NULL;
                 }
