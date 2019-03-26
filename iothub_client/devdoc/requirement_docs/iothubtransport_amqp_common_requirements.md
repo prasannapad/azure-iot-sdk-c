@@ -178,7 +178,7 @@ Note: this will cause the device to be restarted on the next call to DoWork.
 
 ###### on_event_send_complete
 ```c
-static void on_event_send_complete(IOTHUB_MESSAGE_LIST* message, D2C_EVENT_SEND_RESULT result, void* context)
+static void on_event_send_complete(IOTHUB_MESSAGE_LIST* message, IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT result, void* context)
 ``` 
 
 **SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_050: [**If result is D2C_EVENT_SEND_COMPLETE_RESULT_OK, `iothub_send_result` shall be set using IOTHUB_CLIENT_CONFIRMATION_OK**]**
@@ -207,7 +207,7 @@ This handler is provided when amqp_connection_create() is invoked.
 #### on_device_state_changed_callback
 
 ```c
-static void on_device_state_changed_callback(void* context, DEVICE_STATE previous_state, DEVICE_STATE new_state)
+static void on_device_state_changed_callback(void* context, IOTHUBTRANSPORT_AMQP_DEVICE_STATE previous_state, IOTHUBTRANSPORT_AMQP_DEVICE_STATE new_state)
 ```
 
 This handler is provided to each registered device when messenger_create() is invoked.
@@ -291,7 +291,7 @@ This function enables the transport to notify the upper client layer of new mess
 #### on_message_received
 
 ```c
-static DEVICE_MESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDLE iothub_message, void* context)
+static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDLE iothub_message, void* context)
 ```
 
 **SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_089: [**IoTHubClient_LL_MessageCallback() shall be invoked passing the client and the incoming message handles as parameters**]**
@@ -426,7 +426,7 @@ int IoTHubTransport_AMQP_Common_Subscribe_DeviceTwin(IOTHUB_DEVICE_HANDLE handle
 
 #### on_device_twin_update_received_callback
 ```
-static void on_device_twin_update_received_callback(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
+static void on_device_twin_update_received_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
 ``` 
 
 **SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_137: [**If `context` is NULL, the callback shall return.**]**
@@ -460,7 +460,7 @@ IOTHUB_CLIENT_RESULT IoTHubTransport_AMQP_Common_GetDeviceTwinAsync(IOTHUB_DEVIC
 
 #### on_device_get_twin_completed_callback
 ```c
-static void on_device_get_twin_completed_callback(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
+static void on_device_get_twin_completed_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
 ```
 
 **SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_158: [** If `message` or `context` are NULL, the callback shall do nothing and return. **]**
@@ -484,7 +484,7 @@ This function was introduced to be generic point for processing user requests, h
 
 #### on_device_send_twin_update_complete_callback
 ```c
-static void on_device_send_twin_update_complete_callback(DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context)
+static void on_device_send_twin_update_complete_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context)
 ```
 
 **SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_151: [**If `context` is NULL, the callback shall return**]**
