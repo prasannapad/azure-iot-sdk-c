@@ -462,11 +462,11 @@ static void set_expected_calls_for_Create(IOTHUBTRANSPORT_CONFIG* transport_conf
         .SetReturn(TEST_REGISTERED_DEVICES_LIST);
 }
 
-static void set_expected_calls_for_GetSendStatus(IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status)
+static void set_expected_calls_for_GetSendStatus(DEVICE_SEND_STATUS send_status)
 {
     STRICT_EXPECTED_CALL(iothubtransport_amqp_device_get_send_status(TEST_DEVICE_HANDLE, IGNORED_PTR_ARG))
         .IgnoreArgument(2)
-        .CopyOutArgumentBuffer(2, &send_status, sizeof(IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS))
+        .CopyOutArgumentBuffer(2, &send_status, sizeof(DEVICE_SEND_STATUS))
         .SetReturn(0);
 }
 
@@ -512,7 +512,7 @@ static void set_expected_calls_for_destroy_device_message_disposition_info()
 
 static void set_expected_calls_for_SendMessageDisposition(IOTHUBMESSAGE_DISPOSITION_RESULT iothc_disposition_result)
 {
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
+    DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
 
     if (iothc_disposition_result == IOTHUBMESSAGE_ACCEPTED)
     {
@@ -654,7 +654,7 @@ static void set_expected_calls_for_send_pending_events(PDLIST_ENTRY wts, int exp
         .SetReturn(1);
 }
 
-static void set_expected_calls_for_Device_DoWork(PDLIST_ENTRY wts, int wts_length, IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state, bool is_using_cbs, time_t current_time, bool subscribe_for_methods)
+static void set_expected_calls_for_Device_DoWork(PDLIST_ENTRY wts, int wts_length, DEVICE_STATE current_device_state, bool is_using_cbs, time_t current_time, bool subscribe_for_methods)
 {
     if (current_device_state == DEVICE_STATE_STOPPED)
     {
@@ -713,7 +713,7 @@ static void set_expected_calls_for_get_new_underlying_io_transport(bool feed_opt
     }
 }
 
-static void set_expected_calls_for_DoWork2(PDLIST_ENTRY wts, int wts_length, IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool feed_options, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
+static void set_expected_calls_for_DoWork2(PDLIST_ENTRY wts, int wts_length, DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool feed_options, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
 {
     STRICT_EXPECTED_CALL(singlylinkedlist_get_head_item(TEST_REGISTERED_DEVICES_LIST));
 
@@ -746,7 +746,7 @@ static void set_expected_calls_for_DoWork2(PDLIST_ENTRY wts, int wts_length, IOT
     }
 }
 
-static void set_expected_calls_for_DoWork(PDLIST_ENTRY wts, int wts_length, IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
+static void set_expected_calls_for_DoWork(PDLIST_ENTRY wts, int wts_length, DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
 {
     set_expected_calls_for_DoWork2(wts, wts_length, current_device_state, is_tls_io_acquired, false /* feed_options */, is_using_cbs, is_connection_created, is_connection_open, number_of_registered_devices, current_time, subscribe_for_methods);
 }
@@ -787,7 +787,7 @@ static void set_expected_calls_for_Unsubscribe(IOTHUB_DEVICE_CONFIG* device_conf
     STRICT_EXPECTED_CALL(iothubtransport_amqp_device_unsubscribe_message(TEST_DEVICE_HANDLE));
 }
 
-static void set_expected_calls_for_prepare_device_for_connection_retry(IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state)
+static void set_expected_calls_for_prepare_device_for_connection_retry(DEVICE_STATE current_device_state)
 {
     set_expected_calls_for_on_methods_unsubscribed();
 
@@ -797,7 +797,7 @@ static void set_expected_calls_for_prepare_device_for_connection_retry(IOTHUBTRA
     }
 }
 
-static void set_expected_calls_for_prepare_for_connection_retry(int number_of_registered_devices, IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state)
+static void set_expected_calls_for_prepare_for_connection_retry(int number_of_registered_devices, DEVICE_STATE current_device_state)
 {
     RETRY_ACTION retry_action = RETRY_ACTION_RETRY_NOW;
     STRICT_EXPECTED_CALL(retry_control_should_retry(TEST_RETRY_CONTROL_HANDLE, IGNORED_PTR_ARG))
@@ -1013,7 +1013,7 @@ static TRANSPORT_LL_HANDLE create_transport()
     return handle;
 }
 
-static void crank_transport(void* handle, PDLIST_ENTRY wts, int wts_length, IOTHUBTRANSPORT_AMQP_DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
+static void crank_transport(void* handle, PDLIST_ENTRY wts, int wts_length, DEVICE_STATE current_device_state, bool is_tls_io_acquired, bool is_using_cbs, bool is_connection_created, bool is_connection_open, int number_of_registered_devices, time_t current_time, bool subscribe_for_methods)
 {
     umock_c_reset_all_calls();
     set_expected_calls_for_DoWork(wts, wts_length, current_device_state, is_tls_io_acquired, is_using_cbs, is_connection_created, is_connection_open, number_of_registered_devices, current_time, subscribe_for_methods);
@@ -1085,8 +1085,8 @@ static void register_umock_alias_types()
     REGISTER_UMOCK_ALIAS_TYPE(CONNECTION_HANDLE, void*);
     REGISTER_UMOCK_ALIAS_TYPE(AMQP_DEVICE_HANDLE, void*);
     REGISTER_UMOCK_ALIAS_TYPE(DEVICE_CONFIG, void*);
-    REGISTER_UMOCK_ALIAS_TYPE(IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT, int);
-    REGISTER_UMOCK_ALIAS_TYPE(IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS, int);
+    REGISTER_UMOCK_ALIAS_TYPE(DEVICE_MESSAGE_DISPOSITION_RESULT, int);
+    REGISTER_UMOCK_ALIAS_TYPE(DEVICE_SEND_STATUS, int);
     REGISTER_UMOCK_ALIAS_TYPE(IOTHUB_CLIENT_RESULT, int);
     REGISTER_UMOCK_ALIAS_TYPE(IOTHUB_CLIENT_CONNECTION_STATUS, int);
     REGISTER_UMOCK_ALIAS_TYPE(IOTHUB_CLIENT_CONNECTION_STATUS_REASON, int);
@@ -3945,7 +3945,7 @@ TEST_FUNCTION(on_message_received_succeeds)
     STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT result = TEST_device_subscribe_message_saved_callback(
+    DEVICE_MESSAGE_DISPOSITION_RESULT result = TEST_device_subscribe_message_saved_callback(
         TEST_IOTHUB_MESSAGE_HANDLE, &disposition_info, TEST_device_subscribe_message_saved_context);
 
     // assert
@@ -3988,7 +3988,7 @@ TEST_FUNCTION(on_message_received_fails)
     STRICT_EXPECTED_CALL(free(IGNORED_PTR_ARG));
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT result = TEST_device_subscribe_message_saved_callback(
+    DEVICE_MESSAGE_DISPOSITION_RESULT result = TEST_device_subscribe_message_saved_callback(
         TEST_IOTHUB_MESSAGE_HANDLE, &disposition_info, TEST_device_subscribe_message_saved_context);
 
     // assert
@@ -4544,7 +4544,7 @@ TEST_FUNCTION(IoTHubTransport_AMQP_Common_SendMessageDisposition_NULL_CONTEXT_fa
     destroy_transport(handle, device_handle, NULL);
 }
 
-// Tests_SRS_IOTHUBTRANSPORT_AMQP_COMMON_10_004: [IoTHubTransport_AMQP_Common_SendMessageDisposition shall convert the given IOTHUBMESSAGE_DISPOSITION_RESULT to the equivalent IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT and send it via iothubtransport_amqp_device_send_message_disposition.]
+// Tests_SRS_IOTHUBTRANSPORT_AMQP_COMMON_10_004: [IoTHubTransport_AMQP_Common_SendMessageDisposition shall convert the given IOTHUBMESSAGE_DISPOSITION_RESULT to the equivalent DEVICE_MESSAGE_DISPOSITION_RESULT and send it via iothubtransport_amqp_device_send_message_disposition.]
 // Tests_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_112: [A DEVICE_MESSAGE_DISPOSITION_INFO instance shall be created with a copy of the `link_name` and `message_id` contained in `message_data`]
 // Tests_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_114: [`IoTHubTransport_AMQP_Common_SendMessageDisposition()` shall destroy the DEVICE_MESSAGE_DISPOSITION_INFO instance]
 TEST_FUNCTION(IoTHubTransport_AMQP_Common_SendMessageDisposition_ACCEPTED_succeeds)

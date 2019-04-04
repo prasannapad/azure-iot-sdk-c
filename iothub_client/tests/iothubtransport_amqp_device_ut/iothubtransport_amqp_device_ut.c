@@ -245,9 +245,9 @@ static int TEST_twin_messenger_get_twin_async(TWIN_MESSENGER_HANDLE twin_msgr_ha
 
 // ---------- Test Callbacks ---------- //
 static void* TEST_on_state_changed_callback_saved_context;
-static IOTHUBTRANSPORT_AMQP_DEVICE_STATE TEST_on_state_changed_callback_saved_previous_state;
-static IOTHUBTRANSPORT_AMQP_DEVICE_STATE TEST_on_state_changed_callback_saved_new_state;
-static void TEST_on_state_changed_callback(void* context, IOTHUBTRANSPORT_AMQP_DEVICE_STATE previous_state, IOTHUBTRANSPORT_AMQP_DEVICE_STATE new_state)
+static DEVICE_STATE TEST_on_state_changed_callback_saved_previous_state;
+static DEVICE_STATE TEST_on_state_changed_callback_saved_new_state;
+static void TEST_on_state_changed_callback(void* context, DEVICE_STATE previous_state, DEVICE_STATE new_state)
 {
     TEST_on_state_changed_callback_saved_context = context;
     TEST_on_state_changed_callback_saved_previous_state = previous_state;
@@ -257,8 +257,8 @@ static void TEST_on_state_changed_callback(void* context, IOTHUBTRANSPORT_AMQP_D
 static IOTHUB_MESSAGE_HANDLE TEST_on_message_received_saved_message;
 static DEVICE_MESSAGE_DISPOSITION_INFO* TEST_on_message_received_saved_disposition_info;
 static void* TEST_on_message_received_saved_context;
-static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT TEST_on_message_received_return;
-static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT TEST_on_message_received(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context)
+static DEVICE_MESSAGE_DISPOSITION_RESULT TEST_on_message_received_return;
+static DEVICE_MESSAGE_DISPOSITION_RESULT TEST_on_message_received(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context)
 {
     TEST_on_message_received_saved_message = message;
     TEST_on_message_received_saved_disposition_info = disposition_info;
@@ -268,20 +268,20 @@ static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT TEST_on_message_re
 }
 
 static IOTHUB_MESSAGE_LIST* TEST_on_device_d2c_event_send_complete_callback_saved_message;
-static IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT TEST_on_device_d2c_event_send_complete_callback_saved_result;
+static D2C_EVENT_SEND_RESULT TEST_on_device_d2c_event_send_complete_callback_saved_result;
 static void* TEST_on_device_d2c_event_send_complete_callback_saved_context;
-static void TEST_on_device_d2c_event_send_complete_callback(IOTHUB_MESSAGE_LIST* message, IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT result, void* context)
+static void TEST_on_device_d2c_event_send_complete_callback(IOTHUB_MESSAGE_LIST* message, D2C_EVENT_SEND_RESULT result, void* context)
 {
     TEST_on_device_d2c_event_send_complete_callback_saved_message = message;
     TEST_on_device_d2c_event_send_complete_callback_saved_result = result;
     TEST_on_device_d2c_event_send_complete_callback_saved_context = context;
 }
 
-static IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE dvc_get_twin_update_type;
+static DEVICE_TWIN_UPDATE_TYPE dvc_get_twin_update_type;
 static const unsigned char* dvc_get_twin_message;
 static size_t dvc_get_twin_length;
 static void* dvc_get_twin_context;
-static void on_device_get_twin_completed_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
+static void on_device_get_twin_completed_callback(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
 {
     dvc_get_twin_update_type = update_type;
     dvc_get_twin_message = message;
@@ -291,7 +291,7 @@ static void on_device_get_twin_completed_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TW
 
 // ---------- Test Helpers ---------- //
 static DEVICE_CONFIG TEST_device_config;
-static DEVICE_CONFIG* get_device_config(IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE auth_mode)
+static DEVICE_CONFIG* get_device_config(DEVICE_AUTH_MODE auth_mode)
 {
     memset(&TEST_device_config, 0, sizeof(DEVICE_CONFIG));
     TEST_device_config.device_id = TEST_DEVICE_ID_CHAR_PTR;
@@ -305,7 +305,7 @@ static DEVICE_CONFIG* get_device_config(IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE au
     return &TEST_device_config;
 }
 
-static DEVICE_CONFIG* get_device_config_with_module_id(IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE auth_mode)
+static DEVICE_CONFIG* get_device_config_with_module_id(DEVICE_AUTH_MODE auth_mode)
 {
     DEVICE_CONFIG* config = get_device_config(auth_mode);
     config->module_id = TEST_MODULE_ID_CHAR_PTR;
@@ -397,7 +397,7 @@ static void register_umock_alias_types()
     REGISTER_UMOCK_ALIAS_TYPE(ON_TELEMETRY_MESSENGER_MESSAGE_RECEIVED, void*);
     REGISTER_UMOCK_ALIAS_TYPE(ON_TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE, int);
     REGISTER_UMOCK_ALIAS_TYPE(TELEMETRY_MESSENGER_DISPOSITION_RESULT, int);
-    REGISTER_UMOCK_ALIAS_TYPE(IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT, int);
+    REGISTER_UMOCK_ALIAS_TYPE(DEVICE_MESSAGE_DISPOSITION_RESULT, int);
     REGISTER_UMOCK_ALIAS_TYPE(IOTHUB_AUTHORIZATION_HANDLE, void*);
     REGISTER_UMOCK_ALIAS_TYPE(DEVICE_TWIN_UPDATE_RECEIVED_CALLBACK, void*);
 }
@@ -572,7 +572,7 @@ static void set_expected_calls_for_device_stop(DEVICE_CONFIG* config, time_t cur
     }
 }
 
-static void set_expected_calls_for_device_do_work(DEVICE_CONFIG* config, time_t current_time, IOTHUBTRANSPORT_AMQP_DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
+static void set_expected_calls_for_device_do_work(DEVICE_CONFIG* config, time_t current_time, DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
 {
     if (device_state == DEVICE_STATE_STARTING)
     {
@@ -629,7 +629,7 @@ static void set_expected_calls_for_device_do_work(DEVICE_CONFIG* config, time_t 
     }
 }
 
-static void set_expected_calls_for_device_destroy(AMQP_DEVICE_HANDLE handle, DEVICE_CONFIG *config, time_t current_time, IOTHUBTRANSPORT_AMQP_DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
+static void set_expected_calls_for_device_destroy(AMQP_DEVICE_HANDLE handle, DEVICE_CONFIG *config, time_t current_time, DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
 {
     if (device_state == DEVICE_STATE_STARTED || device_state == DEVICE_STATE_STARTING)
     {
@@ -738,7 +738,7 @@ static AMQP_DEVICE_HANDLE create_and_start_device(DEVICE_CONFIG* config, time_t 
     return handle;
 }
 
-static void crank_device_do_work(AMQP_DEVICE_HANDLE handle, DEVICE_CONFIG* config, time_t current_time, IOTHUBTRANSPORT_AMQP_DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
+static void crank_device_do_work(AMQP_DEVICE_HANDLE handle, DEVICE_CONFIG* config, time_t current_time, DEVICE_STATE device_state, AUTHENTICATION_STATE auth_state, TELEMETRY_MESSENGER_STATE msgr_state, TWIN_MESSENGER_STATE twin_msgr_state)
 {
     umock_c_reset_all_calls();
     set_expected_calls_for_device_do_work(config, current_time, device_state, auth_state, msgr_state, twin_msgr_state);
@@ -1372,7 +1372,7 @@ TEST_FUNCTION(device_get_send_status_NULL_handle)
     // arrange
     umock_c_reset_all_calls();
 
-    IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status;
+    DEVICE_SEND_STATUS send_status;
 
     // act
     int result = iothubtransport_amqp_device_get_send_status(NULL, &send_status);
@@ -1427,7 +1427,7 @@ TEST_FUNCTION(device_get_send_status_IDLE_success)
         .SetReturn(0);
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status;
+    DEVICE_SEND_STATUS send_status;
     int result = iothubtransport_amqp_device_get_send_status(handle, &send_status);
 
     // assert
@@ -1460,7 +1460,7 @@ TEST_FUNCTION(device_get_send_status_IDLE_with_module_success)
         .SetReturn(0);
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status;
+    DEVICE_SEND_STATUS send_status;
     int result = iothubtransport_amqp_device_get_send_status(handle, &send_status);
 
     // assert
@@ -1492,7 +1492,7 @@ TEST_FUNCTION(device_get_send_status_BUSY_success)
         .SetReturn(0);
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status;
+    DEVICE_SEND_STATUS send_status;
     int result = iothubtransport_amqp_device_get_send_status(handle, &send_status);
 
     // assert
@@ -1520,7 +1520,7 @@ TEST_FUNCTION(device_get_send_status_failure_checks)
         .SetReturn(1);
 
     // act
-    IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS send_status;
+    DEVICE_SEND_STATUS send_status;
     int result = iothubtransport_amqp_device_get_send_status(handle, &send_status);
 
     // assert
@@ -2619,7 +2619,7 @@ TEST_FUNCTION(on_event_send_complete_messenger_callback_succeeds)
     messenger_results[3] = TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT_ERROR_TIMEOUT;
     messenger_results[4] = TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT_MESSENGER_DESTROYED;
 
-    IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT device_results[5];
+    D2C_EVENT_SEND_RESULT device_results[5];
     device_results[0] = D2C_EVENT_SEND_COMPLETE_RESULT_OK;
     device_results[1] = D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_CANNOT_PARSE;
     device_results[2] = D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_FAIL_SENDING;
@@ -2746,7 +2746,7 @@ TEST_FUNCTION(on_messenger_message_received_callback_succeess)
     messenger_results[1] = TELEMETRY_MESSENGER_DISPOSITION_RESULT_REJECTED;
     messenger_results[2] = TELEMETRY_MESSENGER_DISPOSITION_RESULT_RELEASED;
 
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_results[3];
+    DEVICE_MESSAGE_DISPOSITION_RESULT device_results[3];
     device_results[0] = DEVICE_MESSAGE_DISPOSITION_RESULT_ACCEPTED;
     device_results[1] = DEVICE_MESSAGE_DISPOSITION_RESULT_REJECTED;
     device_results[2] = DEVICE_MESSAGE_DISPOSITION_RESULT_RELEASED;

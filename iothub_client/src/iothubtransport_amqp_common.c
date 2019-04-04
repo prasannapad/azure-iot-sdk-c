@@ -131,7 +131,7 @@ typedef struct AMQP_TRANSPORT_DEVICE_INSTANCE_TAG
     AMQP_DEVICE_HANDLE device_handle;                                   // Logic unit that performs authentication, messaging, etc.
     AMQP_TRANSPORT_INSTANCE* transport_instance;                        // Saved reference to the transport the device is registered on.
     PDLIST_ENTRY waiting_to_send;                                       // List of events waiting to be sent to the iot hub (i.e., haven't been processed by the transport yet).
-    IOTHUBTRANSPORT_AMQP_DEVICE_STATE device_state;                                          // Current state of the device_handle instance.
+    DEVICE_STATE device_state;                                          // Current state of the device_handle instance.
     size_t number_of_previous_failures;                                 // Number of times the device has failed in sequence; this value is reset to 0 if device succeeds to authenticate, send and/or recv messages.
     size_t number_of_send_event_complete_failures;                      // Number of times on_event_send_complete was called in row with an error.
     time_t time_of_last_state_change;                                   // Time the device_handle last changed state; used to track timeouts of iothubtransport_amqp_device_start_async and iothubtransport_amqp_device_stop.
@@ -241,9 +241,9 @@ static void internal_destroy_amqp_device_instance(AMQP_TRANSPORT_DEVICE_INSTANCE
     free(trdev_inst);
 }
 
-static IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE get_authentication_mode(const IOTHUB_DEVICE_CONFIG* device)
+static DEVICE_AUTH_MODE get_authentication_mode(const IOTHUB_DEVICE_CONFIG* device)
 {
-    IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE result;
+    DEVICE_AUTH_MODE result;
 
     if (device->deviceKey != NULL || device->deviceSasToken != NULL)
     {
@@ -273,7 +273,7 @@ static void raise_connection_status_callback_retry_expired(const void* item, con
 
 // @brief
 //     Saves the new state, if it is different than the previous one.
-static void on_device_state_changed_callback(void* context, IOTHUBTRANSPORT_AMQP_DEVICE_STATE previous_state, IOTHUBTRANSPORT_AMQP_DEVICE_STATE new_state)
+static void on_device_state_changed_callback(void* context, DEVICE_STATE previous_state, DEVICE_STATE new_state)
 {
     // Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_061: [If `new_state` is the same as `previous_state`, on_device_state_changed_callback shall return]
     if (context != NULL && new_state != previous_state)
@@ -431,9 +431,9 @@ static void MESSAGE_CALLBACK_INFO_Destroy(MESSAGE_CALLBACK_INFO* message_callbac
     free(message_callback_info);
 }
 
-static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT get_device_disposition_result_from(IOTHUBMESSAGE_DISPOSITION_RESULT iothubclient_disposition_result)
+static DEVICE_MESSAGE_DISPOSITION_RESULT get_device_disposition_result_from(IOTHUBMESSAGE_DISPOSITION_RESULT iothubclient_disposition_result)
 {
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
+    DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
 
     if (iothubclient_disposition_result == IOTHUBMESSAGE_ACCEPTED)
     {
@@ -449,17 +449,17 @@ static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT get_device_disposi
     }
     else
     {
-        LogError("Failed getting corresponding IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT for IOTHUBMESSAGE_DISPOSITION_RESULT (%d is not supported)", iothubclient_disposition_result);
+        LogError("Failed getting corresponding DEVICE_MESSAGE_DISPOSITION_RESULT for IOTHUBMESSAGE_DISPOSITION_RESULT (%d is not supported)", iothubclient_disposition_result);
         device_disposition_result = DEVICE_MESSAGE_DISPOSITION_RESULT_RELEASED;
     }
 
     return device_disposition_result;
 }
 
-static IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context)
+static DEVICE_MESSAGE_DISPOSITION_RESULT on_message_received(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context)
 {
     AMQP_TRANSPORT_DEVICE_INSTANCE* amqp_device_instance = (AMQP_TRANSPORT_DEVICE_INSTANCE*)context;
-    IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
+    DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result;
     MESSAGE_CALLBACK_INFO* message_data;
 
     if ((message_data = MESSAGE_CALLBACK_INFO_Create(message, disposition_info, amqp_device_instance)) == NULL)
@@ -556,7 +556,7 @@ static int subscribe_methods(AMQP_TRANSPORT_DEVICE_INSTANCE* deviceState)
     return result;
 }
 
-static void on_device_send_twin_update_complete_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context)
+static void on_device_send_twin_update_complete_callback(DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context)
 {
     (void)result;
 
@@ -577,7 +577,7 @@ static void on_device_send_twin_update_complete_callback(IOTHUBTRANSPORT_AMQP_DE
     }
 }
 
-static void on_device_twin_update_received_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
+static void on_device_twin_update_received_callback(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
 {
     // Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_137: [If `context` is NULL, the callback shall return.]
     if (context == NULL)
@@ -595,7 +595,7 @@ static void on_device_twin_update_received_callback(IOTHUBTRANSPORT_AMQP_DEVICE_
     }
 }
 
-static void on_device_get_twin_completed_callback(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
+static void on_device_get_twin_completed_callback(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context)
 {
     (void)update_type;
 
@@ -983,8 +983,8 @@ static IOTHUB_MESSAGE_LIST* get_next_event_to_send(AMQP_TRANSPORT_DEVICE_INSTANC
     return message;
 }
 
-// @brief    "Parses" the IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT (from iothubtransport_amqp_device module) into a IOTHUB_CLIENT_CONFIRMATION_RESULT.
-static IOTHUB_CLIENT_CONFIRMATION_RESULT get_iothub_client_confirmation_result_from(IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT result)
+// @brief    "Parses" the D2C_EVENT_SEND_RESULT (from iothubtransport_amqp_device module) into a IOTHUB_CLIENT_CONFIRMATION_RESULT.
+static IOTHUB_CLIENT_CONFIRMATION_RESULT get_iothub_client_confirmation_result_from(D2C_EVENT_SEND_RESULT result)
 {
     IOTHUB_CLIENT_CONFIRMATION_RESULT iothub_send_result;
 
@@ -1014,7 +1014,7 @@ static IOTHUB_CLIENT_CONFIRMATION_RESULT get_iothub_client_confirmation_result_f
 
 // @brief
 //     Callback function for iothubtransport_amqp_device_send_event_async.
-static void on_event_send_complete(IOTHUB_MESSAGE_LIST* message, IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT result, void* context)
+static void on_event_send_complete(IOTHUB_MESSAGE_LIST* message, D2C_EVENT_SEND_RESULT result, void* context)
 {
     AMQP_TRANSPORT_DEVICE_INSTANCE* registered_device = (AMQP_TRANSPORT_DEVICE_INSTANCE*)context;
 
@@ -1205,7 +1205,7 @@ static int IoTHubTransport_AMQP_Common_Device_DoWork(AMQP_TRANSPORT_DEVICE_INSTA
 //     Gets all the device-specific options and replicates them into this new registered device.
 // @returns
 //     0 if the function succeeds, non-zero otherwise.
-static int replicate_device_options_to(AMQP_TRANSPORT_DEVICE_INSTANCE* dev_instance, IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE auth_mode)
+static int replicate_device_options_to(AMQP_TRANSPORT_DEVICE_INSTANCE* dev_instance, DEVICE_AUTH_MODE auth_mode)
 {
     int result;
 
@@ -1935,7 +1935,7 @@ IOTHUB_CLIENT_RESULT IoTHubTransport_AMQP_Common_GetSendStatus(IOTHUB_DEVICE_HAN
     {
         AMQP_TRANSPORT_DEVICE_INSTANCE* amqp_device_state = (AMQP_TRANSPORT_DEVICE_INSTANCE*)handle;
 
-        IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS device_send_status;
+        DEVICE_SEND_STATUS device_send_status;
         // Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_097: [IoTHubTransport_AMQP_Common_GetSendStatus shall invoke iothubtransport_amqp_device_get_send_status()]
         if (iothubtransport_amqp_device_get_send_status(amqp_device_state->device_handle, &device_send_status) != RESULT_OK)
         {
@@ -2476,13 +2476,13 @@ IOTHUB_CLIENT_RESULT IoTHubTransport_AMQP_Common_SendMessageDisposition(MESSAGE_
             DEVICE_MESSAGE_DISPOSITION_INFO* device_message_disposition_info;
 
             /* Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_10_004: [IoTHubTransport_AMQP_Common_SendMessageDisposition shall convert the given IOTHUBMESSAGE_DISPOSITION_RESULT to the equivalent AMQP_VALUE and will return the result of calling messagereceiver_send_message_disposition. ] */
-            IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result = get_device_disposition_result_from(disposition);
+            DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result = get_device_disposition_result_from(disposition);
 
             // Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_112: [A DEVICE_MESSAGE_DISPOSITION_INFO instance shall be created with a copy of the `link_name` and `message_id` contained in `message_data`]
             if ((device_message_disposition_info = create_device_message_disposition_info_from(message_data)) == NULL)
             {
                 // Codes_SRS_IOTHUBTRANSPORT_AMQP_COMMON_09_113: [If the DEVICE_MESSAGE_DISPOSITION_INFO fails to be created, `IoTHubTransport_AMQP_Common_SendMessageDisposition()` shall fail and return IOTHUB_CLIENT_ERROR]
-                LogError("Device '%s' failed sending message disposition (failed creating IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT)", STRING_c_str(message_data->transportContext->device_state->device_id));
+                LogError("Device '%s' failed sending message disposition (failed creating DEVICE_MESSAGE_DISPOSITION_RESULT)", STRING_c_str(message_data->transportContext->device_state->device_id));
                 result = IOTHUB_CLIENT_ERROR;
             }
             else

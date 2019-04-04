@@ -12,13 +12,13 @@
 #include "internal/iothubtransport_amqp_telemetry_messenger.h"
 #include "internal/iothubtransport_amqp_twin_messenger.h"
 
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_STATE, DEVICE_STATE_VALUES);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE, DEVICE_AUTH_MODE_VALUES);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS, DEVICE_SEND_STATUS_VALUES);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT, D2C_EVENT_SEND_RESULT_VALUES);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT, DEVICE_MESSAGE_DISPOSITION_RESULT_VALUES);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT, DEVICE_TWIN_UPDATE_RESULT_STRINGS);
-DEFINE_ENUM_STRINGS(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE, DEVICE_TWIN_UPDATE_TYPE_STRINGS)
+DEFINE_ENUM_STRINGS(DEVICE_STATE, DEVICE_STATE_VALUES);
+DEFINE_ENUM_STRINGS(DEVICE_AUTH_MODE, DEVICE_AUTH_MODE_VALUES);
+DEFINE_ENUM_STRINGS(DEVICE_SEND_STATUS, DEVICE_SEND_STATUS_VALUES);
+DEFINE_ENUM_STRINGS(D2C_EVENT_SEND_RESULT, D2C_EVENT_SEND_RESULT_VALUES);
+DEFINE_ENUM_STRINGS(DEVICE_MESSAGE_DISPOSITION_RESULT, DEVICE_MESSAGE_DISPOSITION_RESULT_VALUES);
+DEFINE_ENUM_STRINGS(DEVICE_TWIN_UPDATE_RESULT, DEVICE_TWIN_UPDATE_RESULT_STRINGS);
+DEFINE_ENUM_STRINGS(DEVICE_TWIN_UPDATE_TYPE, DEVICE_TWIN_UPDATE_TYPE_STRINGS)
 
 #define RESULT_OK                                  0
 #define INDEFINITE_TIME                            ((time_t)-1)
@@ -31,7 +31,7 @@ static const char* DEVICE_OPTION_SAVED_MESSENGER_OPTIONS = "saved_device_messeng
 typedef struct DEVICE_INSTANCE_TAG
 {
     DEVICE_CONFIG* config;
-    IOTHUBTRANSPORT_AMQP_DEVICE_STATE state;
+    DEVICE_STATE state;
 
     SESSION_HANDLE session_handle;
     CBS_HANDLE cbs_handle;
@@ -77,11 +77,11 @@ typedef struct DEVICE_GET_TWIN_CONTEXT_TAG
 } DEVICE_GET_TWIN_CONTEXT;
 
 // Internal state control
-static void update_state(AMQP_DEVICE_INSTANCE* instance, IOTHUBTRANSPORT_AMQP_DEVICE_STATE new_state)
+static void update_state(AMQP_DEVICE_INSTANCE* instance, DEVICE_STATE new_state)
 {
     if (new_state != instance->state)
     {
-        IOTHUBTRANSPORT_AMQP_DEVICE_STATE previous_state = instance->state;
+        DEVICE_STATE previous_state = instance->state;
         instance->state = new_state;
 
         if (instance->config->on_state_changed_callback != NULL)
@@ -130,9 +130,9 @@ static int is_timeout_reached(time_t start_time, size_t timeout_in_secs, int *is
 
 //---------- Callback Handlers ----------//
 
-static IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT get_d2c_event_send_result_from(TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT result)
+static D2C_EVENT_SEND_RESULT get_d2c_event_send_result_from(TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT result)
 {
-    IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT d2c_esr;
+    D2C_EVENT_SEND_RESULT d2c_esr;
 
     switch (result)
     {
@@ -175,7 +175,7 @@ static void on_event_send_complete_messenger_callback(IOTHUB_MESSAGE_LIST* iothu
         // Codes_SRS_DEVICE_09_061: [If `ev_send_comp_result` is TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT_ERROR_FAIL_SENDING, D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_FAIL_SENDING shall be reported as `event_send_complete`]
         // Codes_SRS_DEVICE_09_062: [If `ev_send_comp_result` is TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT_ERROR_TIMEOUT, D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_TIMEOUT shall be reported as `event_send_complete`]
         // Codes_SRS_DEVICE_09_063: [If `ev_send_comp_result` is TELEMETRY_MESSENGER_EVENT_SEND_COMPLETE_RESULT_MESSENGER_DESTROYED, D2C_EVENT_SEND_COMPLETE_RESULT_DEVICE_DESTROYED shall be reported as `event_send_complete`]
-        IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT device_send_result = get_d2c_event_send_result_from(ev_send_comp_result);
+        D2C_EVENT_SEND_RESULT device_send_result = get_d2c_event_send_result_from(ev_send_comp_result);
 
         // Codes_SRS_DEVICE_09_064: [If provided, the user callback and context saved in `send_task` shall be invoked passing the device `event_send_complete`]
         if (send_task->on_event_send_complete_callback != NULL)
@@ -237,9 +237,9 @@ static void on_messenger_state_changed_callback(void* context, TELEMETRY_MESSENG
     }
 }
 
-static IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT get_device_twin_update_result_from(TWIN_REPORT_STATE_RESULT result)
+static DEVICE_TWIN_UPDATE_RESULT get_device_twin_update_result_from(TWIN_REPORT_STATE_RESULT result)
 {
-    IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT device_result;
+    DEVICE_TWIN_UPDATE_RESULT device_result;
 
     switch (result)
     {
@@ -271,7 +271,7 @@ static void on_report_state_complete_callback(TWIN_REPORT_STATE_RESULT result, T
         // Codes_SRS_DEVICE_09_141: [on_send_twin_update_complete_callback (if provided by user) shall be invoked passing the corresponding device result and `status_code`]
         if (twin_ctx->on_send_twin_update_complete_callback != NULL)
         {
-            IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT device_result;
+            DEVICE_TWIN_UPDATE_RESULT device_result;
 
             device_result = get_device_twin_update_result_from(result);
 
@@ -293,7 +293,7 @@ static void on_twin_state_update_callback(TWIN_UPDATE_TYPE update_type, const ch
     {
         AMQP_DEVICE_INSTANCE* instance = (AMQP_DEVICE_INSTANCE*)context;
 
-        IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE device_update_type;
+        DEVICE_TWIN_UPDATE_TYPE device_update_type;
 
         if (update_type == TWIN_UPDATE_TYPE_COMPLETE)
         {
@@ -400,7 +400,7 @@ static void destroy_messenger_disposition_info(TELEMETRY_MESSENGER_MESSAGE_DISPO
     free(messenger_disposition_info);
 }
 
-static TELEMETRY_MESSENGER_DISPOSITION_RESULT get_messenger_message_disposition_result_from(IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result)
+static TELEMETRY_MESSENGER_DISPOSITION_RESULT get_messenger_message_disposition_result_from(DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result)
 {
     TELEMETRY_MESSENGER_DISPOSITION_RESULT messenger_disposition_result;
 
@@ -460,7 +460,7 @@ static TELEMETRY_MESSENGER_DISPOSITION_RESULT on_messenger_message_received_call
             else
             {
                 // Codes_SRS_DEVICE_09_071: [The user callback shall be invoked, passing the context it provided]
-                IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result = device_instance->on_message_received_callback(iothub_message_handle, device_message_disposition_info, device_instance->on_message_received_context);
+                DEVICE_MESSAGE_DISPOSITION_RESULT device_disposition_result = device_instance->on_message_received_callback(iothub_message_handle, device_message_disposition_info, device_instance->on_message_received_context);
 
                 // Codes_SRS_DEVICE_09_072: [If the user callback returns DEVICE_MESSAGE_DISPOSITION_RESULT_ACCEPTED, on_messenger_message_received_callback shall return TELEMETRY_MESSENGER_DISPOSITION_RESULT_ACCEPTED]
                 // Codes_SRS_DEVICE_09_073: [If the user callback returns DEVICE_MESSAGE_DISPOSITION_RESULT_REJECTED, on_messenger_message_received_callback shall return TELEMETRY_MESSENGER_DISPOSITION_RESULT_REJECTED]
@@ -1207,7 +1207,7 @@ int iothubtransport_amqp_device_send_event_async(AMQP_DEVICE_HANDLE handle, IOTH
     return result;
 }
 
-int iothubtransport_amqp_device_get_send_status(AMQP_DEVICE_HANDLE handle, IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS *send_status)
+int iothubtransport_amqp_device_get_send_status(AMQP_DEVICE_HANDLE handle, DEVICE_SEND_STATUS *send_status)
 {
     int result;
 
@@ -1316,7 +1316,7 @@ int iothubtransport_amqp_device_unsubscribe_message(AMQP_DEVICE_HANDLE handle)
     return result;
 }
 
-int iothubtransport_amqp_device_send_message_disposition(AMQP_DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result)
+int iothubtransport_amqp_device_send_message_disposition(AMQP_DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result)
 {
     int result;
 

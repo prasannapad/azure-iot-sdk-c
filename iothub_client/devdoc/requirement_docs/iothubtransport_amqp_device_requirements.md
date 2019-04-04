@@ -35,19 +35,19 @@ typedef enum DEVICE_STATE_TAG
 	DEVICE_STATE_ERROR_AUTH,
 	DEVICE_STATE_ERROR_AUTH_TIMEOUT,
 	DEVICE_STATE_ERROR_MSG
-} IOTHUBTRANSPORT_AMQP_DEVICE_STATE;
+} DEVICE_STATE;
 
 typedef enum DEVICE_AUTH_MODE_TAG
 {
 	DEVICE_AUTH_MODE_CBS,
 	DEVICE_AUTH_MODE_X509
-} IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE;
+} DEVICE_AUTH_MODE;
 
 typedef enum DEVICE_SEND_STATUS_TAG
 {
 	DEVICE_SEND_STATUS_IDLE,
 	DEVICE_SEND_STATUS_BUSY
-} IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS;
+} DEVICE_SEND_STATUS;
 
 typedef enum D2C_EVENT_SEND_RESULT_TAG
 {
@@ -57,7 +57,7 @@ typedef enum D2C_EVENT_SEND_RESULT_TAG
 	D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_TIMEOUT,
 	D2C_EVENT_SEND_COMPLETE_RESULT_DEVICE_DESTROYED,
 	D2C_EVENT_SEND_COMPLETE_RESULT_ERROR_UNKNOWN
-} IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT;
+} D2C_EVENT_SEND_RESULT;
 
 typedef enum DEVICE_MESSAGE_DISPOSITION_RESULT_TAG
 {
@@ -65,31 +65,31 @@ typedef enum DEVICE_MESSAGE_DISPOSITION_RESULT_TAG
 	DEVICE_MESSAGE_DISPOSITION_RESULT_ACCEPTED,
 	DEVICE_MESSAGE_DISPOSITION_RESULT_REJECTED,
 	DEVICE_MESSAGE_DISPOSITION_RESULT_ABANDONED
-} IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT;
+} DEVICE_MESSAGE_DISPOSITION_RESULT;
 
 typedef enum DEVICE_TWIN_UPDATE_RESULT_TAG
 {
     DEVICE_TWIN_UPDATE_RESULT_OK,
     DEVICE_TWIN_UPDATE_RESULT_ERROR
-} IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT;
+} DEVICE_TWIN_UPDATE_RESULT;
 
 typedef enum DEVICE_TWIN_UPDATE_TYPE_TAG
 {
     DEVICE_TWIN_UPDATE_TYPE_PARTIAL,
     DEVICE_TWIN_UPDATE_TYPE_COMPLETE
-} IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE;
+} DEVICE_TWIN_UPDATE_TYPE;
 
-typedef void(*ON_DEVICE_STATE_CHANGED)(void* context, IOTHUBTRANSPORT_AMQP_DEVICE_STATE previous_state, IOTHUBTRANSPORT_AMQP_DEVICE_STATE new_state);
-typedef IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT(*ON_DEVICE_C2D_MESSAGE_RECEIVED)(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context);
-typedef void(*ON_DEVICE_D2C_EVENT_SEND_COMPLETE)(IOTHUB_MESSAGE_LIST* message, IOTHUBTRANSPORT_AMQP_D2C_EVENT_SEND_RESULT result, void* context);
-typedef void(*DEVICE_SEND_TWIN_UPDATE_COMPLETE_CALLBACK)(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context);
-typedef void(*DEVICE_TWIN_UPDATE_RECEIVED_CALLBACK)(IOTHUBTRANSPORT_AMQP_DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context);
+typedef void(*ON_DEVICE_STATE_CHANGED)(void* context, DEVICE_STATE previous_state, DEVICE_STATE new_state);
+typedef DEVICE_MESSAGE_DISPOSITION_RESULT(*ON_DEVICE_C2D_MESSAGE_RECEIVED)(IOTHUB_MESSAGE_HANDLE message, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, void* context);
+typedef void(*ON_DEVICE_D2C_EVENT_SEND_COMPLETE)(IOTHUB_MESSAGE_LIST* message, D2C_EVENT_SEND_RESULT result, void* context);
+typedef void(*DEVICE_SEND_TWIN_UPDATE_COMPLETE_CALLBACK)(DEVICE_TWIN_UPDATE_RESULT result, int status_code, void* context);
+typedef void(*DEVICE_TWIN_UPDATE_RECEIVED_CALLBACK)(DEVICE_TWIN_UPDATE_TYPE update_type, const unsigned char* message, size_t length, void* context);
 
 typedef struct DEVICE_CONFIG_TAG
 {
     const char* device_id;
     char* iothub_host_fqdn;
-    IOTHUBTRANSPORT_AMQP_DEVICE_AUTH_MODE authentication_mode;
+    DEVICE_AUTH_MODE authentication_mode;
     ON_DEVICE_STATE_CHANGED on_state_changed_callback;
     void* on_state_changed_context;
     IOTHUB_AUTHORIZATION_HANDLE authorization_module;
@@ -107,10 +107,10 @@ extern int iothubtransport_amqp_device_send_twin_update_async(DEVICE_HANDLE hand
 extern int iothubtransport_amqp_device_subscribe_for_twin_updates(DEVICE_HANDLE handle, DEVICE_TWIN_UPDATE_RECEIVED_CALLBACK on_device_twin_update_received_callback, void* context);
 extern int iothubtransport_amqp_device_unsubscribe_for_twin_updates(DEVICE_HANDLE handle);
 extern int iothubtransport_amqp_device_get_twin_async(AMQP_DEVICE_HANDLE handle, DEVICE_TWIN_UPDATE_RECEIVED_CALLBACK on_device_get_twin_completed_callback, void* context);
-extern int iothubtransport_amqp_device_get_send_status(DEVICE_HANDLE handle, IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS *send_status);
+extern int iothubtransport_amqp_device_get_send_status(DEVICE_HANDLE handle, DEVICE_SEND_STATUS *send_status);
 extern int iothubtransport_amqp_device_subscribe_message(DEVICE_HANDLE handle, ON_DEVICE_C2D_MESSAGE_RECEIVED on_message_received_callback, void* context);
 extern int iothubtransport_amqp_device_unsubscribe_message(DEVICE_HANDLE handle);
-extern int iothubtransport_amqp_device_send_message_disposition(DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result);
+extern int iothubtransport_amqp_device_send_message_disposition(DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result);
 extern int iothubtransport_amqp_device_set_retry_policy(DEVICE_HANDLE handle, IOTHUB_CLIENT_RETRY_POLICY policy, size_t retry_timeout_limit_in_seconds);
 extern int iothubtransport_amqp_device_set_option(DEVICE_HANDLE handle, const char* name, void* value);
 extern OPTIONHANDLER_HANDLE iothubtransport_amqp_device_retrieve_options(DEVICE_HANDLE handle);
@@ -401,7 +401,7 @@ extern int iothubtransport_amqp_device_unsubscribe_message(DEVICE_HANDLE handle)
 
 ## iothubtransport_amqp_device_send_message_disposition
 ```c
-extern int iothubtransport_amqp_device_send_message_disposition(DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, IOTHUBTRANSPORT_AMQP_DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result);
+extern int iothubtransport_amqp_device_send_message_disposition(DEVICE_HANDLE device_handle, DEVICE_MESSAGE_DISPOSITION_INFO* disposition_info, DEVICE_MESSAGE_DISPOSITION_RESULT disposition_result);
 ```
 
 **SRS_DEVICE_09_111: [**If `device_handle` or `disposition_info` are NULL, iothubtransport_amqp_device_send_message_disposition() shall fail and return __FAILURE__**]**
@@ -480,7 +480,7 @@ extern OPTIONHANDLER_HANDLE iothubtransport_amqp_device_retrieve_options(DEVICE_
 ### iothubtransport_amqp_device_get_send_status
 
 ```c
-extern int iothubtransport_amqp_device_get_send_status(DEVICE_HANDLE handle, IOTHUBTRANSPORT_AMQP_DEVICE_SEND_STATUS *send_status);
+extern int iothubtransport_amqp_device_get_send_status(DEVICE_HANDLE handle, DEVICE_SEND_STATUS *send_status);
 ```
 
 **SRS_DEVICE_09_105: [**If `handle` or `send_status` is NULL, iothubtransport_amqp_device_get_send_status shall return a non-zero result**]**
